@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-26T11:51:15.878898",
+  "generated_at": "2026-01-26T17:51:44.937750",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 116.0,
-      "change_24h": 14.47,
+      "value": 115.96,
+      "change_24h": 14.43,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-26 17:51:14"
+      "timestamp": "2026-01-26 17:51:43"
     },
     "premium": {
       "metric": "premium",
@@ -18,9 +18,9 @@
       "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 116.0,
-        "physical": 129.92000000000002,
-        "usd": 13.920000000000016
+        "spot": 115.96,
+        "physical": 129.8752,
+        "usd": 13.915200000000013
       }
     },
     "inventory": {
@@ -46,7 +46,7 @@
       "metric": "margin",
       "value": 45000.0,
       "unit": "USD",
-      "days_since_change": -1,
+      "days_since_change": 0,
       "status_color": "red",
       "status_label": "Volatile",
       "is_normalizing": false,
@@ -81,6 +81,6 @@
       "status_label": "Market Easing",
       "description": "3/4 indicators normalizing"
     },
-    "last_updated": "2026-01-26T11:51:15.878833"
+    "last_updated": "2026-01-26T17:51:44.937712"
   }
 }
