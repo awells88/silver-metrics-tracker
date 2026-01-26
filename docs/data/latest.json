@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-01-26T10:42:32.813906",
+  "version": "1.0",
+  "metrics": {
+    "spot_price": {
+      "value": 112.55,
+      "change_24h": 11.07,
+      "source": "yahoo_finance",
+      "timestamp": "2026-01-26 16:42:28"
+    },
+    "premium": {
+      "metric": "premium",
+      "value": 12.0,
+      "unit": "% over spot",
+      "status_color": "yellow",
+      "status_label": "Elevated",
+      "is_normalizing": false,
+      "threshold_normal": "3.0-10.0%",
+      "description": "Physical silver price vs paper/spot",
+      "raw": {
+        "spot": 112.55,
+        "physical": 126.05600000000001,
+        "usd": 13.506000000000014
+      }
+    },
+    "inventory": {
+      "metric": "inventory",
+      "value": 416.4248632420001,
+      "unit": "M oz",
+      "status_color": "green",
+      "status_label": "Healthy",
+      "is_normalizing": true,
+      "threshold_normal": ">400.0M oz",
+      "trend": "recovering",
+      "trend_change_moz": 414.05,
+      "description": "COMEX warehouse silver stocks",
+      "registered_moz": 114.26277506,
+      "registered_status": "Healthy",
+      "raw": {
+        "total_oz": 416424863.24200004,
+        "registered_oz": 114262775.06,
+        "eligible_oz": 302162088.18200004
+      }
+    },
+    "margin": {
+      "metric": "margin",
+      "value": 45000.0,
+      "unit": "USD",
+      "days_since_change": -1,
+      "status_color": "red",
+      "status_label": "Volatile",
+      "is_normalizing": false,
+      "threshold_stable": "30+ days unchanged",
+      "description": "CME initial margin for silver futures",
+      "raw": {
+        "initial": 45000.0,
+        "maintenance": 40500.0
+      }
+    },
+    "lease_rate": {
+      "metric": "lease_rate",
+      "value": 2.5,
+      "unit": "%",
+      "status_color": "green",
+      "status_label": "Normal",
+      "is_normalizing": true,
+      "threshold_normal": "0.3-3.0%",
+      "description": "Cost to borrow physical silver",
+      "raw": {
+        "rate": 2.5,
+        "source": "futures_curve_proxy"
+      }
+    },
+    "composite": {
+      "score": 2,
+      "total": 4,
+      "percentage": 50.0,
+      "status_color": "yellow",
+      "status_label": "Mixed Signals",
+      "description": "2/4 indicators normalizing"
+    },
+    "last_updated": "2026-01-26T10:42:32.813849"
+  }
+}
