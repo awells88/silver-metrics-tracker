@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-26T11:50:35.064267",
+  "generated_at": "2026-01-26T11:51:15.879527",
   "days_included": 90,
   "data": {
     "snapshots": {
@@ -35,20 +35,38 @@
           "status_margins": "red",
           "status_lease": "green",
           "composite_score": 3
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-01-26 17:51:15",
+          "spot_price": 116.0,
+          "premium_pct": 12.0,
+          "inventory_total_moz": 416.4248632420001,
+          "inventory_registered_moz": 114.26277506,
+          "margin_initial": 45000.0,
+          "margin_days_stable": -1,
+          "lease_rate_proxy": 2.5,
+          "status_premiums": "green",
+          "status_inventory": "green",
+          "status_margins": "red",
+          "status_lease": "green",
+          "composite_score": 3
         }
       ],
       "charts": {
         "spot_price": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Spot Price (USD)",
               "data": [
                 113.765,
-                115.795
+                115.795,
+                116.0
               ]
             }
           ]
@@ -56,12 +74,14 @@
         "premium_pct": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Premium (%)",
               "data": [
+                12.0,
                 12.0,
                 12.0
               ]
@@ -71,12 +91,14 @@
         "inventory_total": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Total Inventory (M oz)",
               "data": [
+                416.4248632420001,
                 416.4248632420001,
                 416.4248632420001
               ]
@@ -86,12 +108,14 @@
         "margin_initial": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Initial Margin (USD)",
               "data": [
+                45000.0,
                 45000.0,
                 45000.0
               ]
@@ -101,12 +125,14 @@
         "lease_rate": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Lease Rate Proxy (%)",
               "data": [
+                2.5,
                 2.5,
                 2.5
               ]
@@ -116,13 +142,15 @@
         "composite_score": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:50"
+            "2026-01-26 17:50",
+            "2026-01-26 17:51"
           ],
           "datasets": [
             {
               "label": "Composite Score",
               "data": [
                 2,
+                3,
                 3
               ]
             }
@@ -131,7 +159,7 @@
       }
     },
     "spot_prices": {
-      "count": 2,
+      "count": 3,
       "records": [
         {
           "id": 1,
@@ -148,11 +176,19 @@
           "price_usd": 115.795,
           "change_24h": 14.462,
           "change_pct_24h": 14.27
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-01-26 17:51:14",
+          "source": "yahoo_finance",
+          "price_usd": 116.0,
+          "change_24h": 14.667,
+          "change_pct_24h": 14.47
         }
       ]
     },
     "premiums": {
-      "count": 2,
+      "count": 3,
       "records": [
         {
           "id": 1,
@@ -173,11 +209,21 @@
           "physical_price": 129.6904,
           "premium_usd": 13.89540000000001,
           "premium_pct": 12.0
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-01-26 17:51:15",
+          "source": "estimated",
+          "product_type": "estimated",
+          "spot_price": 116.0,
+          "physical_price": 129.92000000000002,
+          "premium_usd": 13.920000000000016,
+          "premium_pct": 12.0
         }
       ]
     },
     "inventory": {
-      "count": 2,
+      "count": 3,
       "records": [
         {
           "id": 1,
@@ -196,11 +242,20 @@
           "eligible_oz": 302162088.18200004,
           "total_oz": 416424863.24200004,
           "daily_change_oz": 0.0
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-01-26 17:51:14",
+          "source": "CME",
+          "registered_oz": 114262775.06,
+          "eligible_oz": 302162088.18200004,
+          "total_oz": 416424863.24200004,
+          "daily_change_oz": 0.0
         }
       ]
     },
     "margins": {
-      "count": 2,
+      "count": 3,
       "records": [
         {
           "id": 1,
@@ -214,6 +269,15 @@
         {
           "id": 2,
           "timestamp": "2026-01-26 17:50:34",
+          "source": "CME",
+          "contract": "SI",
+          "initial_margin": 45000.0,
+          "maintenance_margin": 40500.0,
+          "margin_pct": 30.0
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-01-26 17:51:15",
           "source": "CME",
           "contract": "SI",
           "initial_margin": 45000.0,
