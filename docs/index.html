@@ -22,7 +22,7 @@
         <section class="composite-banner" id="composite-banner">
             <div class="composite-score">
                 <span class="score-value" id="composite-score">-</span>
-                <span class="score-label">/ 4 Normalizing</span>
+                <span class="score-label">/ 5 Normalizing</span>
             </div>
             <div class="composite-status" id="composite-status">Loading...</div>
         </section>
@@ -106,6 +106,26 @@
                     <canvas id="chart-margin"></canvas>
                 </div>
             </div>
+
+            <!-- Shanghai Premium Panel -->
+            <div class="metric-panel" id="panel-shanghai">
+                <div class="panel-header">
+                    <h2>🇨🇳 Shanghai Premium</h2>
+                    <span class="status-badge" id="status-shanghai">--</span>
+                </div>
+                <div class="panel-value">
+                    <span class="value" id="value-shanghai">--</span>
+                    <span class="unit">$/oz</span>
+                </div>
+                <div class="panel-context">
+                    <p>Shanghai vs Western spot price</p>
+                    <p class="threshold">Normal: $1-2/oz</p>
+                </div>
+                <div class="panel-detail" id="shanghai-detail"></div>
+                <div class="panel-chart">
+                    <canvas id="chart-shanghai"></canvas>
+                </div>
+            </div>
         </section>
 
         <!-- Spot Price Reference -->
@@ -120,20 +140,21 @@
         <!-- Info Section -->
         <section class="info-section">
             <h3>About This Tracker</h3>
-            <p>This dashboard monitors four key indicators of silver market stress:</p>
+            <p>This dashboard monitors five key indicators of silver market stress:</p>
             <ul>
                 <li><strong>Lease Rates</strong> - High rates (>5-10%) indicate physical shortages</li>
                 <li><strong>Physical Premiums</strong> - Wide premiums show retail/dealer supply tightness</li>
                 <li><strong>COMEX Inventory</strong> - Drawdowns signal delivery demand exceeding supply</li>
                 <li><strong>Margin Stability</strong> - Frequent hikes indicate exchange concern about volatility</li>
+                <li><strong>Shanghai Premium</strong> - Large East-West arbitrage gaps show constrained supply flows</li>
             </ul>
-            <p>When all four indicators normalize (green), the market is balanced. Red indicators signal stress.</p>
+            <p>When all five indicators normalize (green), the market is balanced. Red indicators signal stress.</p>
         </section>
 
         <!-- Footer -->
         <footer class="footer">
-            <p>Data updates every 12 hours via automated scripts</p>
-            <p>Sources: CME Group, Kitco, papervsphysical.com, Yahoo Finance</p>
+            <p>Data updates every 12 hours via automated scripts</p>, metalcharts.org</p>
+            <p><a href="https://github.com/awells88/silver-metrics-trace</p>
             <p><a href="https://github.com/YOUR_USERNAME/silver-metrics-traker" target="_blank">View on GitHub</a></p>
         </footer>
     </div>

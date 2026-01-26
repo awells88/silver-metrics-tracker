@@ -84,6 +84,7 @@ function updateDashboard(metrics) {
     updatePanel('premium', metrics.premium);
     updatePanel('inventory', metrics.inventory);
     updatePanel('margin', metrics.margin);
+    updatePanel('shanghai', metrics.shanghai_premium);
 }
 
 /**
@@ -159,7 +160,10 @@ function updatePanel(name, data) {
         const detailEl = document.getElementById('margin-detail');
         if (detailEl && data.value) {
             detailEl.textContent = `Initial margin: $${data.value.toLocaleString()}`;
-        }
+        }if (name === 'shanghai') {
+        // For Shanghai, show premium in USD with 2 decimals
+        valueEl.textContent = data.value !== null ? data.value.toFixed(2) : '--';
+    } else 
     } else {
         valueEl.textContent = data.value !== null ? data.value.toFixed(1) : '--';
     }
@@ -189,6 +193,9 @@ function updateCharts(historicalData) {
     const chartData = historicalData.snapshots.charts;
     
     // Create individual charts
+    if (chartData.shanghai_premium) {
+        createMiniChart('chart-shanghai', chartData.shanghai_premium, COLORS.red);
+    }
     createMiniChart('chart-lease', chartData.lease_rate, COLORS.primary);
     createMiniChart('chart-premium', chartData.premium_pct, COLORS.orange);
     createMiniChart('chart-inventory', chartData.inventory_total, COLORS.green);

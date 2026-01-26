@@ -47,6 +47,7 @@ jobs:
         run: python main.py
         env:
           PYTHONPATH: ${{ github.workspace }}
+          METALPRICEAPI_KEY: ${{ secrets.METALPRICEAPI_KEY }}
       
       - name: Commit and push data files
         run: |

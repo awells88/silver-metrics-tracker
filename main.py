@@ -22,6 +22,7 @@ from scripts.fetch_cme_stocks import fetch_cme_stocks
 from scripts.fetch_cme_margins import fetch_cme_margins
 from scripts.fetch_premiums import fetch_premiums
 from scripts.fetch_lease_rates import fetch_lease_rate_proxy
+from scripts.fetch_shanghai_premium import fetch_shanghai_premium
 from scripts.normalize import get_current_metrics, create_snapshot
 from scripts.export_json import export_all, get_export_summary
 
@@ -50,6 +51,7 @@ def fetch_all_data(logger) -> dict:
         'margins': None,
         'premiums': None,
         'lease_rates': None,
+        'shanghai_premium': None,
         'errors': []
     }
     
@@ -115,6 +117,19 @@ def fetch_all_data(logger) -> dict:
         logger.error(f"✗ Lease rate error: {e}")
         results['errors'].append(f"Lease rates: {e}")
     
+    # 6. Shanghai Premium
+    logger.info("Fetching Shanghai premium...")
+    try:
+        results['shanghai_premium'] = fetch_shanghai_premium()
+        if results['shanghai_premium']:
+            logger.info(f"✓ Shanghai premium: +${results['shanghai_premium']['premium_usd']:.2f}/oz "
+                       f"({results['shanghai_premium']['premium_pct']:.1f}%)")
+        else:
+            results['errors'].append("Failed to fetch Shanghai premium")
+    except Exception as e:
+        logger.error(f"✗ Shanghai premium error: {e}")
+        results['errors'].append(f"Shanghai premium: {e}")
+    
     return results
 
 
@@ -131,7 +146,7 @@ def process_and_export(logger) -> bool:
         
         # Log composite score
         composite = metrics.get('composite', {})
-        logger.info(f"Composite score: {composite.get('score', 0)}/{composite.get('total', 4)} "
+        logger.info(f"Composite score: {composite.get('score', 0)}/{composite.get('total', 5)} "
                    f"- {composite.get('status_label', 'Unknown')}")
         
         # Create snapshot for historical tracking

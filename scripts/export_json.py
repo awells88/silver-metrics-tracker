@@ -121,6 +121,9 @@ def export_historical_json(days: int = 90) -> Path:
                 'lease_rate': format_historical_for_charts(
                     snapshots, 'lease_rate_proxy', 'Lease Rate Proxy (%)'
                 ),
+                'shanghai_premium': format_historical_for_charts(
+                    snapshots, 'shanghai_premium_usd', 'Shanghai Premium ($/oz)'
+                ),
                 'composite_score': format_historical_for_charts(
                     snapshots, 'composite_score', 'Composite Score'
                 )

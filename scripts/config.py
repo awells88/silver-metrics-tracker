@@ -31,6 +31,13 @@ KITCO_SPOT_URL = "https://www.kitco.com/charts/livesilver.html"
 # Paper vs Physical - Premium Tracking
 PAPER_VS_PHYSICAL_URL = "https://www.papervsphysical.com"
 
+# Shanghai Premium - MetalpriceAPI (get free key at https://metalpriceapi.com/register)
+# Set via environment variable: export METALPRICEAPI_KEY=your_key_here
+# Free tier: 100 requests/month, daily updates
+METALPRICEAPI_URL = "https://api.metalpriceapi.com/v1/latest"
+
+# Shanghai premium reference (for validation): https://metalcharts.org/shanghai
+
 # Yahoo Finance - Silver Futures Symbol
 YAHOO_SILVER_SYMBOL = "SI=F"
 
@@ -105,14 +112,23 @@ THRESHOLDS = {
         "elevated": 10.0,      # Warning threshold
         "extreme": 12.0,
     },
+    
+    # Shanghai Gold Exchange Premium (USD per troy oz)
+    # Measures East-West arbitrage gap
+    # Normal: $1-2/oz difference, elevated demand in China or supply constraints push higher
+    "shanghai_premium": {
+        "normal_high": 2.0,     # Green - normal arbitrage range
+        "elevated": 5.0,        # Yellow - elevated China demand
+        "stressed": 8.0,        # Red - significant arbitrage opportunity/supply constraint
+    },
 }
 
 # === Composite Score Thresholds ===
 # How many indicators must be "green" for overall market easing signal
 COMPOSITE_THRESHOLDS = {
-    "easing": 3,        # 3-4 of 4 = market easing (green overall)
-    "mixed": 2,         # 2 of 4 = mixed signals (yellow)
-    "stressed": 1,      # ≤1 of 4 = market stress (red)
+    "easing": 4,        # 4-5 of 5 = market easing (green overall)
+    "mixed": 2,         # 2-3 of 5 = mixed signals (yellow)
+    "stressed": 1,      # ≤1 of 5 = market stress (red)
 }
 
 # === Status Determination ===

@@ -1,6 +1,6 @@
 # Silver Metrics Tracker 🥈📊
 
-A self-hosted dashboard tracking silver market normalization indicators. Monitors physical supply tightness vs paper trading through four key metrics.
+A self-hosted dashboard tracking silver market normalization indicators. Monitors physical supply tightness vs paper trading through five key metrics.
 
 ## 📈 Tracked Indicators
 
@@ -10,6 +10,7 @@ A self-hosted dashboard tracking silver market normalization indicators. Monitor
 | **Physical Premiums** | Dealer prices vs spot | 3-10% | >20% |
 | **COMEX Inventory** | Exchange warehouse stocks | 300-400M oz | <250M oz |
 | **Margin Stability** | CME futures margin changes | Stable 30+ days | Weekly hikes |
+| **Shanghai Premium** | China import demand vs West | $1-2/oz | >$5/oz |
 
 ## 🚀 Quick Start
 
@@ -78,7 +79,21 @@ silver-metrics-traker/
 - **CME Group**: Warehouse stocks, margin requirements
 - **Kitco**: Spot prices, market news
 - **papervsphysical.com**: Real-time dealer premiums
+- **MetalpriceAPI**: Silver spot prices for premium calculations
 - **Yahoo Finance**: Futures data (backup)
+
+### Optional: MetalpriceAPI Setup
+
+For live silver prices (used in Shanghai premium calculation):
+
+1. Get a free API key at [metalpriceapi.com](https://metalpriceapi.com/register)
+2. Set the environment variable:
+   ```bash
+   export METALPRICEAPI_KEY=your_key_here
+   ```
+3. For GitHub Actions, add `METALPRICEAPI_KEY` as a repository secret
+
+Without an API key, the tracker uses database spot prices with observed premium values.
 
 ## ⚙️ Automation
 
@@ -91,9 +106,9 @@ Data updates automatically every 12 hours via GitHub Actions:
 
 ## 🎨 Dashboard Features
 
-- **4-Panel Layout**: Each indicator with current value + trend chart
+- **5-Panel Layout**: Each indicator with current value + trend chart
 - **Status Indicators**: Green/Yellow/Red based on thresholds
-- **Composite Score**: Overall market stress level (0-4 indicators normalizing)
+- **Composite Score**: Overall market stress level (0-5 indicators normalizing)
 - **Historical Charts**: 30/90/365 day views
 - **Mobile Responsive**: Works on all devices
 

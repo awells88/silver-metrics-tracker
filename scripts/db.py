@@ -106,6 +106,19 @@ def init_database():
             )
         """)
         
+        # Shanghai Gold Exchange premium table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS shanghai_premium (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                source TEXT DEFAULT 'SGE',
+                shanghai_spot REAL NOT NULL,
+                western_spot REAL NOT NULL,
+                premium_usd REAL NOT NULL,
+                premium_pct REAL NOT NULL
+            )
+        """)
+        
         # Aggregated metrics table (for dashboard snapshots)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS metrics_snapshot (
@@ -118,10 +131,12 @@ def init_database():
                 margin_initial REAL,
                 margin_days_stable INTEGER,
                 lease_rate_proxy REAL,
+                shanghai_premium_usd REAL,
                 status_premiums TEXT,
                 status_inventory TEXT,
                 status_margins TEXT,
                 status_lease TEXT,
+                status_shanghai TEXT,
                 composite_score INTEGER
             )
         """)
@@ -131,6 +146,7 @@ def init_database():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_premiums_timestamp ON premiums(timestamp)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_inventory_timestamp ON inventory(timestamp)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_margins_timestamp ON margins(timestamp)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_shanghai_timestamp ON shanghai_premium(timestamp)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_snapshot_timestamp ON metrics_snapshot(timestamp)")
         
         logger.info("Database initialized successfully")
@@ -198,6 +214,19 @@ def insert_lease_rate(source: str, rate_type: str, rate_pct: float, tenor: str =
         return cursor.lastrowid
 
 
+def insert_shanghai_premium(shanghai_spot: float, western_spot: float, 
+                            premium_usd: float, premium_pct: float, source: str = "SGE") -> int:
+    """Insert a new Shanghai premium record."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO shanghai_premium (source, shanghai_spot, western_spot, 
+                                         premium_usd, premium_pct)
+            VALUES (?, ?, ?, ?, ?)
+        """, (source, shanghai_spot, western_spot, premium_usd, premium_pct))
+        return cursor.lastrowid
+
+
 def insert_metrics_snapshot(data: Dict[str, Any]) -> int:
     """Insert a metrics snapshot for the dashboard."""
     with get_connection() as conn:
@@ -205,10 +234,10 @@ def insert_metrics_snapshot(data: Dict[str, Any]) -> int:
         cursor.execute("""
             INSERT INTO metrics_snapshot (
                 spot_price, premium_pct, inventory_total_moz, inventory_registered_moz,
-                margin_initial, margin_days_stable, lease_rate_proxy,
-                status_premiums, status_inventory, status_margins, status_lease,
+                margin_initial, margin_days_stable, lease_rate_proxy, shanghai_premium_usd,
+                status_premiums, status_inventory, status_margins, status_lease, status_shanghai,
                 composite_score
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             data.get('spot_price'),
             data.get('premium_pct'),
@@ -217,10 +246,12 @@ def insert_metrics_snapshot(data: Dict[str, Any]) -> int:
             data.get('margin_initial'),
             data.get('margin_days_stable'),
             data.get('lease_rate_proxy'),
+            data.get('shanghai_premium_usd'),
             data.get('status_premiums'),
             data.get('status_inventory'),
             data.get('status_margins'),
             data.get('status_lease'),
+            data.get('status_shanghai'),
             data.get('composite_score')
         ))
         return cursor.lastrowid
@@ -272,6 +303,17 @@ def get_latest_margin() -> Optional[Dict]:
         return dict(row) if row else None
 
 
+def get_latest_shanghai_premium() -> Optional[Dict]:
+    """Get the most recent Shanghai premium data."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM shanghai_premium ORDER BY timestamp DESC LIMIT 1
+        """)
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
 def get_latest_snapshot() -> Optional[Dict]:
     """Get the most recent metrics snapshot."""
     with get_connection() as conn:
@@ -286,7 +328,7 @@ def get_latest_snapshot() -> Optional[Dict]:
 def get_historical_data(table: str, days: int = 30, limit: int = 1000) -> List[Dict]:
     """Get historical data from a table for the past N days."""
     valid_tables = ['spot_prices', 'premiums', 'inventory', 'margins', 
-                    'lease_rates', 'metrics_snapshot']
+                    'lease_rates', 'shanghai_premium', 'metrics_snapshot']
     if table not in valid_tables:
         raise ValueError(f"Invalid table: {table}")
     

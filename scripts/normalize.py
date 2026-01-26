@@ -13,6 +13,7 @@ from scripts.db import (
     get_latest_premium,
     get_latest_inventory,
     get_latest_margin,
+    get_latest_shanghai_premium,
     get_margin_last_change_date,
     get_inventory_trend,
     get_historical_data,
@@ -152,6 +153,42 @@ def normalize_inventory(total_moz: float, registered_moz: float = None) -> Dict[
         result['registered_status'] = reg_label
     
     return result
+
+
+def normalize_shanghai_premium(premium_usd: float) -> Dict[str, Any]:
+    """
+    Normalize Shanghai Gold Exchange premium data.
+    Lower premiums ($1-2) = normal arbitrage (green)
+    Higher premiums = elevated China demand or supply constraints (red)
+    
+    Premium is the difference between Shanghai spot and Western (COMEX/LBMA) spot.
+    """
+    thresholds = THRESHOLDS['shanghai_premium']
+    
+    # Determine status based on premium USD
+    if premium_usd <= thresholds['normal_high']:
+        color = 'green'
+        label = 'Normal'
+        is_normalizing = True
+    elif premium_usd <= thresholds['elevated']:
+        color = 'yellow'
+        label = 'Elevated'
+        is_normalizing = False
+    else:
+        color = 'red'
+        label = 'Stressed'
+        is_normalizing = False
+    
+    return {
+        'metric': 'shanghai_premium',
+        'value': premium_usd,
+        'unit': '$/oz',
+        'status_color': color,
+        'status_label': label,
+        'is_normalizing': is_normalizing,
+        'threshold_normal': f"≤${thresholds['normal_high']}/oz",
+        'description': 'Shanghai vs Western silver price difference'
+    }
 
 
 def normalize_margin(initial_margin: float, spot_price: float = None, 
@@ -351,10 +388,23 @@ def get_current_metrics() -> Dict[str, Any]:
         metrics['lease_rate'] = normalize_lease_rate(2.5)
         metrics['lease_rate']['raw'] = {'rate': 2.5, 'source': 'placeholder'}
     
-    # Composite score
+    # Shanghai premium
+    shanghai = get_latest_shanghai_premium()
+    if shanghai:
+        metrics['shanghai_premium'] = normalize_shanghai_premium(shanghai['premium_usd'])
+        metrics['shanghai_premium']['raw'] = {
+            'shanghai_spot': shanghai['shanghai_spot'],
+            'western_spot': shanghai['western_spot'],
+            'premium_pct': shanghai['premium_pct']
+        }
+    else:
+        # No shanghai data
+        metrics['shanghai_premium'] = None
+    
+    # Composite score - now includes 5 metrics
     stress_metrics = {
         k: v for k, v in metrics.items() 
-        if k in ['premium', 'inventory', 'margin', 'lease_rate']
+        if k in ['premium', 'inventory', 'margin', 'lease_rate', 'shanghai_premium']
     }
     metrics['composite'] = calculate_composite_score(stress_metrics)
     
@@ -376,10 +426,12 @@ def create_snapshot(metrics: Dict[str, Any]) -> int:
         'margin_initial': metrics.get('margin', {}).get('value'),
         'margin_days_stable': metrics.get('margin', {}).get('days_since_change'),
         'lease_rate_proxy': metrics.get('lease_rate', {}).get('value'),
+        'shanghai_premium_usd': metrics.get('shanghai_premium', {}).get('value') if metrics.get('shanghai_premium') else None,
         'status_premiums': metrics.get('premium', {}).get('status_color'),
         'status_inventory': metrics.get('inventory', {}).get('status_color'),
         'status_margins': metrics.get('margin', {}).get('status_color'),
         'status_lease': metrics.get('lease_rate', {}).get('status_color'),
+        'status_shanghai': metrics.get('shanghai_premium', {}).get('status_color') if metrics.get('shanghai_premium') else None,
         'composite_score': metrics.get('composite', {}).get('score')
     }
     
