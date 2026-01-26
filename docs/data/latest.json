@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-26T10:59:51.674965",
+  "generated_at": "2026-01-26T17:00:25.728817",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 113.765,
-      "change_24h": 12.27,
+      "value": 113.93,
+      "change_24h": 12.43,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-26 16:59:50"
+      "timestamp": "2026-01-26 17:00:24"
     },
     "premium": {
       "metric": "premium",
@@ -18,9 +18,9 @@
       "threshold_normal": "3.0-10.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 113.765,
-        "physical": 127.41680000000001,
-        "usd": 13.651800000000009
+        "spot": 113.93,
+        "physical": 127.60160000000002,
+        "usd": 13.671600000000012
       }
     },
     "inventory": {
@@ -31,8 +31,8 @@
       "status_label": "Healthy",
       "is_normalizing": true,
       "threshold_normal": ">400.0M oz",
-      "trend": "unknown",
-      "trend_change_moz": 0,
+      "trend": "stable",
+      "trend_change_moz": 0.0,
       "description": "COMEX warehouse silver stocks",
       "registered_moz": 114.26277506,
       "registered_status": "Healthy",
@@ -46,7 +46,7 @@
       "metric": "margin",
       "value": 45000.0,
       "unit": "USD",
-      "days_since_change": -1,
+      "days_since_change": 0,
       "status_color": "red",
       "status_label": "Volatile",
       "is_normalizing": false,
@@ -79,6 +79,6 @@
       "status_label": "Mixed Signals",
       "description": "2/4 indicators normalizing"
     },
-    "last_updated": "2026-01-26T10:59:51.674859"
+    "last_updated": "2026-01-26T17:00:25.728788"
   }
 }
