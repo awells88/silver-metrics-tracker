@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-26T21:30:59.764174",
+  "generated_at": "2026-01-26T21:34:15.809946",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 105.215,
-      "change_24h": 3.83,
+      "value": 104.71,
+      "change_24h": 3.33,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-26 21:30:58"
+      "timestamp": "2026-01-26 21:34:14"
     },
     "premium": {
       "metric": "premium",
@@ -18,9 +18,9 @@
       "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 105.215,
-        "physical": 117.84080000000002,
-        "usd": 12.625800000000012
+        "spot": 104.71,
+        "physical": 117.2752,
+        "usd": 12.565200000000004
       }
     },
     "inventory": {
@@ -52,7 +52,7 @@
       "is_normalizing": false,
       "threshold_stable": "30+ days unchanged",
       "description": "CME initial margin for silver futures",
-      "pct_of_notional": 8.55,
+      "pct_of_notional": 8.6,
       "pct_threshold_normal": "7.0-9.0%",
       "raw": {
         "initial": 45000.0,
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-01-26T21:30:59.764147"
+    "last_updated": "2026-01-26T21:34:15.809917"
   }
 }
