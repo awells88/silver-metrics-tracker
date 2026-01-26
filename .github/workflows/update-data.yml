@@ -43,9 +43,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: Initialize database
-        run: python scripts/db.py
-      
       - name: Fetch and process data
         run: python main.py
         env:
