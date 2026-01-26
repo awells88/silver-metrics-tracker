@@ -54,7 +54,7 @@ class TestNormalization:
     
     def test_premium_elevated(self):
         """Test elevated premium levels."""
-        result = normalize_premium(15.0)
+        result = normalize_premium(18.0)  # Above 15% normal_high
         assert result['status_color'] == 'yellow'
     
     def test_premium_extreme(self):
@@ -70,7 +70,7 @@ class TestNormalization:
     
     def test_inventory_low(self):
         """Test low inventory levels."""
-        result = normalize_inventory(280.0)
+        result = normalize_inventory(375.0)  # Between 350-400M = yellow
         assert result['status_color'] == 'yellow'
     
     def test_inventory_critical(self):

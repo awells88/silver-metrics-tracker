@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-26T17:00:25.729181",
+  "generated_at": "2026-01-26T11:50:35.064267",
   "days_included": 90,
   "data": {
     "snapshots": {
@@ -22,33 +22,33 @@
         },
         {
           "id": 2,
-          "timestamp": "2026-01-26 17:00:25",
-          "spot_price": 113.93,
+          "timestamp": "2026-01-26 17:50:35",
+          "spot_price": 115.795,
           "premium_pct": 12.0,
           "inventory_total_moz": 416.4248632420001,
           "inventory_registered_moz": 114.26277506,
           "margin_initial": 45000.0,
-          "margin_days_stable": 0,
+          "margin_days_stable": -1,
           "lease_rate_proxy": 2.5,
-          "status_premiums": "yellow",
+          "status_premiums": "green",
           "status_inventory": "green",
           "status_margins": "red",
           "status_lease": "green",
-          "composite_score": 2
+          "composite_score": 3
         }
       ],
       "charts": {
         "spot_price": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
               "label": "Spot Price (USD)",
               "data": [
                 113.765,
-                113.93
+                115.795
               ]
             }
           ]
@@ -56,7 +56,7 @@
         "premium_pct": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
@@ -71,7 +71,7 @@
         "inventory_total": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
@@ -86,7 +86,7 @@
         "margin_initial": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
@@ -101,7 +101,7 @@
         "lease_rate": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
@@ -116,14 +116,14 @@
         "composite_score": {
           "labels": [
             "2026-01-26 16:59",
-            "2026-01-26 17:00"
+            "2026-01-26 17:50"
           ],
           "datasets": [
             {
               "label": "Composite Score",
               "data": [
                 2,
-                2
+                3
               ]
             }
           ]
@@ -143,11 +143,11 @@
         },
         {
           "id": 2,
-          "timestamp": "2026-01-26 17:00:24",
+          "timestamp": "2026-01-26 17:50:33",
           "source": "yahoo_finance",
-          "price_usd": 113.93,
-          "change_24h": 12.597,
-          "change_pct_24h": 12.43
+          "price_usd": 115.795,
+          "change_24h": 14.462,
+          "change_pct_24h": 14.27
         }
       ]
     },
@@ -166,12 +166,12 @@
         },
         {
           "id": 2,
-          "timestamp": "2026-01-26 17:00:25",
+          "timestamp": "2026-01-26 17:50:34",
           "source": "estimated",
           "product_type": "estimated",
-          "spot_price": 113.93,
-          "physical_price": 127.60160000000002,
-          "premium_usd": 13.671600000000012,
+          "spot_price": 115.795,
+          "physical_price": 129.6904,
+          "premium_usd": 13.89540000000001,
           "premium_pct": 12.0
         }
       ]
@@ -190,7 +190,7 @@
         },
         {
           "id": 2,
-          "timestamp": "2026-01-26 17:00:24",
+          "timestamp": "2026-01-26 17:50:33",
           "source": "CME",
           "registered_oz": 114262775.06,
           "eligible_oz": 302162088.18200004,
@@ -213,7 +213,7 @@
         },
         {
           "id": 2,
-          "timestamp": "2026-01-26 17:00:25",
+          "timestamp": "2026-01-26 17:50:34",
           "source": "CME",
           "contract": "SI",
           "initial_margin": 45000.0,

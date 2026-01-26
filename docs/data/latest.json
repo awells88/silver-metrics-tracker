@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-01-26T17:00:25.728817",
+  "generated_at": "2026-01-26T11:50:35.063304",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 113.93,
-      "change_24h": 12.43,
+      "value": 115.795,
+      "change_24h": 14.27,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-26 17:00:24"
+      "timestamp": "2026-01-26 17:50:33"
     },
     "premium": {
       "metric": "premium",
       "value": 12.0,
       "unit": "% over spot",
-      "status_color": "yellow",
-      "status_label": "Elevated",
-      "is_normalizing": false,
-      "threshold_normal": "3.0-10.0%",
+      "status_color": "green",
+      "status_label": "Normal",
+      "is_normalizing": true,
+      "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 113.93,
-        "physical": 127.60160000000002,
-        "usd": 13.671600000000012
+        "spot": 115.795,
+        "physical": 129.6904,
+        "usd": 13.89540000000001
       }
     },
     "inventory": {
@@ -52,6 +52,8 @@
       "is_normalizing": false,
       "threshold_stable": "30+ days unchanged",
       "description": "CME initial margin for silver futures",
+      "pct_of_notional": 7.77,
+      "pct_threshold_normal": "7.0-9.0%",
       "raw": {
         "initial": 45000.0,
         "maintenance": 40500.0
@@ -72,13 +74,13 @@
       }
     },
     "composite": {
-      "score": 2,
+      "score": 3,
       "total": 4,
-      "percentage": 50.0,
-      "status_color": "yellow",
-      "status_label": "Mixed Signals",
-      "description": "2/4 indicators normalizing"
+      "percentage": 75.0,
+      "status_color": "green",
+      "status_label": "Market Easing",
+      "description": "3/4 indicators normalizing"
     },
-    "last_updated": "2026-01-26T17:00:25.728788"
+    "last_updated": "2026-01-26T11:50:35.063258"
   }
 }

@@ -50,8 +50,12 @@ def determine_status(value: float, thresholds: Dict[str, float],
             return ('red', 'Critical')
         elif 'stressed' in thresholds and value <= thresholds['stressed']:
             return ('red', 'Stressed')
-        elif 'normal_low' in thresholds and value < thresholds['normal_low']:
-            return ('yellow', 'Low')
+        elif 'healthy' in thresholds and value < thresholds['healthy']:
+            # Yellow zone: between normal_low and healthy
+            if 'normal_low' in thresholds and value >= thresholds['normal_low']:
+                return ('yellow', 'Watchable')
+            else:
+                return ('yellow', 'Low')
         else:
             return ('green', 'Healthy')
 
@@ -150,11 +154,15 @@ def normalize_inventory(total_moz: float, registered_moz: float = None) -> Dict[
     return result
 
 
-def normalize_margin(initial_margin: float, last_change_date: datetime = None) -> Dict[str, Any]:
+def normalize_margin(initial_margin: float, spot_price: float = None, 
+                    last_change_date: datetime = None) -> Dict[str, Any]:
     """
     Normalize margin data.
     Stability (no changes) = normalizing (green)
     Recent hikes = volatile market (red)
+    
+    Also calculates margin as % of notional value (5000 oz contract).
+    Normal: 7-9%, Warning: >10%
     """
     thresholds = THRESHOLDS['margin_stability_days']
     
@@ -182,7 +190,25 @@ def normalize_margin(initial_margin: float, last_change_date: datetime = None) -
         label = 'Volatile'
         is_normalizing = False
     
-    return {
+    # Calculate margin as % of notional (if spot price available)
+    pct_notional = None
+    if spot_price:
+        notional_value = 5000 * spot_price  # CME silver contract = 5000 oz
+        pct_notional = (initial_margin / notional_value) * 100
+        
+        # Check if margin % is elevated
+        pct_thresholds = THRESHOLDS['margin_pct_notional']
+        if pct_notional > pct_thresholds['extreme']:
+            if color != 'red':
+                color = 'red'
+                label = 'Elevated (High %)'
+            is_normalizing = False
+        elif pct_notional > pct_thresholds['elevated']:
+            if color == 'green':
+                color = 'yellow'
+                label = 'Watch (>10% notional)'
+    
+    result = {
         'metric': 'margin',
         'value': initial_margin,
         'unit': 'USD',
@@ -193,13 +219,27 @@ def normalize_margin(initial_margin: float, last_change_date: datetime = None) -
         'threshold_stable': f"{thresholds['stable']}+ days unchanged",
         'description': 'CME initial margin for silver futures'
     }
+    
+    if pct_notional is not None:
+        result['pct_of_notional'] = round(pct_notional, 2)
+        pct_thresholds = THRESHOLDS['margin_pct_notional']
+        result['pct_threshold_normal'] = f"{pct_thresholds['normal_low']}-{pct_thresholds['normal_high']}%"
+    
+    return result
 
 
 def calculate_composite_score(metrics: Dict[str, Dict]) -> Dict[str, Any]:
     """
     Calculate overall market stress composite score.
     Score = number of metrics that are normalizing (green).
+    
+    Based on COMPOSITE_THRESHOLDS:
+    - 3-4 of 4 = market easing (green)
+    - 2 of 4 = mixed signals (yellow)
+    - ≤1 of 4 = market stress (red)
     """
+    from scripts.config import COMPOSITE_THRESHOLDS
+    
     normalizing_count = 0
     total_metrics = 0
     
@@ -219,20 +259,18 @@ def calculate_composite_score(metrics: Dict[str, Dict]) -> Dict[str, Any]:
             'description': 'Insufficient data'
         }
     
-    ratio = normalizing_count / total_metrics
-    
-    if ratio >= 0.75:
+    # Use thresholds from config
+    if normalizing_count >= COMPOSITE_THRESHOLDS['easing']:
         color = 'green'
-        label = 'Market Normalizing'
-    elif ratio >= 0.5:
+        label = 'Market Easing'
+    elif normalizing_count >= COMPOSITE_THRESHOLDS['mixed']:
         color = 'yellow'
         label = 'Mixed Signals'
-    elif ratio >= 0.25:
-        color = 'orange'
-        label = 'Elevated Stress'
     else:
         color = 'red'
-        label = 'High Stress'
+        label = 'Market Stress'
+    
+    ratio = normalizing_count / total_metrics
     
     return {
         'score': normalizing_count,
@@ -253,9 +291,11 @@ def get_current_metrics() -> Dict[str, Any]:
     
     # Spot price (baseline, not a stress indicator itself)
     spot = get_latest_spot_price()
+    spot_price_value = None
     if spot:
+        spot_price_value = spot['price_usd']
         metrics['spot_price'] = {
-            'value': spot['price_usd'],
+            'value': spot_price_value,
             'change_24h': spot.get('change_pct_24h'),
             'source': spot['source'],
             'timestamp': spot['timestamp']
@@ -283,10 +323,13 @@ def get_current_metrics() -> Dict[str, Any]:
             'eligible_oz': inventory['eligible_oz']
         }
     
-    # Margins
+    # Margins (pass spot price for % of notional calculation)
     margin = get_latest_margin()
     if margin:
-        metrics['margin'] = normalize_margin(margin['initial_margin'])
+        metrics['margin'] = normalize_margin(
+            margin['initial_margin'],
+            spot_price=spot_price_value
+        )
         metrics['margin']['raw'] = {
             'initial': margin['initial_margin'],
             'maintenance': margin['maintenance_margin']

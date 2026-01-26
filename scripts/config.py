@@ -36,22 +36,29 @@ YAHOO_SILVER_SYMBOL = "SI=F"
 
 # === Historical Thresholds ===
 # These define what "normal" vs "stressed" looks like
+# Based on 2010-2025 historical data analysis
+# Reference: Pre-2021 quiet periods, 2021 squeeze, 2025 rally recovery
 
 THRESHOLDS = {
     # Lease Rates (annualized %)
+    # Historical: 0.3-3% normal (balanced supply), >5% = borrowing stress, 20-40%+ = shortage
     "lease_rate": {
         "normal_low": 0.3,
         "normal_high": 3.0,
-        "stressed": 10.0,  # Above this = major stress
-        "extreme": 20.0,   # Above this = crisis
+        "watch": 5.0,        # Yellow - borrowing stress emerging
+        "stressed": 10.0,     # Red - major stress
+        "extreme": 20.0,      # Crisis level
     },
     
     # Physical Premiums (% over spot)
+    # Historical: 5-15% normal (aggregate/generic), 15-20% watch, >20% = retail shortage
+    # Note: Government coins (Eagles) naturally higher (10-25%); generic bars 5-10%
     "premium_pct": {
-        "normal_low": 3.0,
-        "normal_high": 10.0,
-        "stressed": 20.0,
-        "extreme": 50.0,
+        "normal_low": 5.0,
+        "normal_high": 15.0,
+        "watch": 20.0,        # Yellow - elevated demand
+        "stressed": 30.0,     # Red - shortage signal
+        "extreme": 50.0,      # Severe shortage
     },
     
     # Physical Premiums ($/oz over spot for coins)
@@ -63,14 +70,17 @@ THRESHOLDS = {
     },
     
     # COMEX Inventory (millions of oz)
+    # Historical: 350-450M normal, >500M = buildups, <300M = drawdowns/delivery pressure
+    # Recovery/inflows above 400M ease stress
     "inventory_total": {
-        "healthy": 400.0,
-        "normal_low": 300.0,
-        "stressed": 250.0,
-        "critical": 200.0,
+        "healthy": 400.0,      # Green - good buffer, recovery signal
+        "normal_low": 350.0,   # Yellow - watchable but acceptable
+        "stressed": 300.0,     # Red - delivery pressure likely
+        "critical": 250.0,     # Extreme tightness
     },
     
     # COMEX Registered (millions of oz)
+    # Deliverable silver - more sensitive indicator
     "inventory_registered": {
         "healthy": 100.0,
         "normal_low": 75.0,
@@ -79,11 +89,30 @@ THRESHOLDS = {
     },
     
     # Margin stability (days since last change)
+    # Frequent hikes signal speculative heat (e.g., 2011, 2025-2026 adjustments)
     "margin_stability_days": {
-        "stable": 30,      # 1+ month = stable
-        "normalizing": 14, # 2+ weeks = improving
-        "volatile": 7,     # Weekly changes = stressed
+        "stable": 30,          # 1+ month = green (normalized)
+        "normalizing": 14,     # 2+ weeks = yellow (cooling)
+        "volatile": 7,         # Weekly changes = red (stressed)
     },
+    
+    # Margin as % of notional value
+    # New threshold: Normal ~7-9%, warning >10%
+    # Notional = 5000 oz × spot price
+    "margin_pct_notional": {
+        "normal_low": 7.0,
+        "normal_high": 9.0,
+        "elevated": 10.0,      # Warning threshold
+        "extreme": 12.0,
+    },
+}
+
+# === Composite Score Thresholds ===
+# How many indicators must be "green" for overall market easing signal
+COMPOSITE_THRESHOLDS = {
+    "easing": 3,        # 3-4 of 4 = market easing (green overall)
+    "mixed": 2,         # 2 of 4 = mixed signals (yellow)
+    "stressed": 1,      # ≤1 of 4 = market stress (red)
 }
 
 # === Status Determination ===
