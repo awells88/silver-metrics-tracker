@@ -97,7 +97,7 @@ Without an API key, the tracker uses database spot prices with observed premium 
 
 ## ⚙️ Automation
 
-Data updates automatically every 12 hours via GitHub Actions:
+Data updates automatically every hour via GitHub Actions:
 
 1. Fetches latest data from all sources
 2. Processes and stores in database

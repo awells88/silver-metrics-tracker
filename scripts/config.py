@@ -33,7 +33,7 @@ PAPER_VS_PHYSICAL_URL = "https://www.papervsphysical.com"
 
 # Shanghai Premium - MetalpriceAPI (get free key at https://metalpriceapi.com/register)
 # Set via environment variable: export METALPRICEAPI_KEY=your_key_here
-# Free tier: 100 requests/month, daily updates
+# Note: Free tier (100 requests/month) insufficient for hourly updates (720/month). Paid plan required.
 METALPRICEAPI_URL = "https://api.metalpriceapi.com/v1/latest"
 
 # Shanghai premium reference (for validation): https://metalcharts.org/shanghai
@@ -151,7 +151,7 @@ REQUEST_HEADERS = {
 }
 
 # === Update Schedule ===
-UPDATE_INTERVAL_HOURS = 12
+UPDATE_INTERVAL_HOURS = 1
 
 # === Logging ===
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
