@@ -1,14 +1,16 @@
 """
-Fetch Shanghai silver premium data using MetalpriceAPI.
-Primary source: metalpriceapi.com (provides XAG prices in USD and CNY)
+Fetch Shanghai silver premium data using Playwright + SGE official source.
+Primary source: en.sge.com.cn (official SGE benchmark price in CNY/kg)
 Fallback: Manual values
 
-The premium is the difference between Shanghai silver price (XAG in CNY converted to USD)
-and Western spot price (XAG in USD), reflecting import demand and arbitrage.
+The premium is the difference between Shanghai silver price (SGE in CNY/kg converted to USD)
+and Western spot price (from MetalpriceAPI in USD), reflecting import demand and arbitrage.
 """
 
 import logging
 import os
+import re
+import time
 from datetime import datetime
 from typing import Optional, Dict, Any
 
@@ -19,105 +21,86 @@ from scripts.db import insert_shanghai_premium
 
 logger = logging.getLogger(__name__)
 
-# MetalpriceAPI configuration
-# Get your free API key at: https://metalpriceapi.com/register
+# Data sources
+SGE_OFFICIAL_URL = "https://en.sge.com.cn/h5_data_SilverBenchmarkPrice"
+
+# MetalpriceAPI configuration (for Western spot price)
 METALPRICEAPI_URL = "https://api.metalpriceapi.com/v1/latest"
 METALPRICEAPI_KEY = os.environ.get("METALPRICEAPI_KEY", "")
 
 
-def fetch_from_metalpriceapi() -> Optional[Dict[str, Any]]:
+def fetch_sge_official_with_playwright() -> Optional[Dict[str, Any]]:
     """
-    Fetch silver prices from MetalpriceAPI.
+    Fetch official SGE silver benchmark price using Playwright.
+    Price is in CNY/kg and needs conversion to USD/oz.
     
-    Gets XAG (silver) price in both USD and CNY to calculate the
-    Shanghai premium (price difference due to import demand).
-    
-    API returns:
-    - XAG rate: how many oz of silver per 1 USD (e.g., 0.00925 = $108.11/oz)
-    - CNY rate: how many CNY per 1 USD (e.g., 7.25)
-    
-    Shanghai silver (in USD terms) = (CNY/oz silver) / (CNY/USD rate)
-    Premium = Shanghai USD price - Western USD price
+    Waits 10 seconds for JavaScript to render the price data.
     
     Returns:
-        Dict with shanghai_spot, western_spot, premium_usd, premium_pct or None
+        Dict with shanghai_spot in USD/oz or None
     """
-    if not METALPRICEAPI_KEY:
-        logger.warning("METALPRICEAPI_KEY not set - cannot fetch live prices")
-        return None
-        
     try:
-        # Request XAG (silver) and CNY rates with USD as base
-        params = {
-            'api_key': METALPRICEAPI_KEY,
-            'base': 'USD',
-            'currencies': 'XAG,CNY'
-        }
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        logger.warning("Playwright not installed - cannot scrape SGE. Install with: pip install playwright")
+        return None
+    
+    try:
+        today = datetime.now().strftime('%Y%m%d')
         
-        response = requests.get(
-            METALPRICEAPI_URL,
-            params=params,
-            headers=REQUEST_HEADERS,
-            timeout=30
-        )
-        response.raise_for_status()
-        
-        data = response.json()
-        
-        if not data.get('success'):
-            error = data.get('error', {})
-            logger.error(f"MetalpriceAPI error: {error.get('info', 'Unknown error')}")
-            return None
-        
-        rates = data.get('rates', {})
-        
-        # XAG rate = oz of silver per 1 USD
-        # So 1/XAG = USD per oz (Western spot price)
-        xag_rate = rates.get('XAG')
-        cny_rate = rates.get('CNY')  # CNY per 1 USD
-        
-        if not xag_rate or not cny_rate:
-            logger.error(f"Missing rates in response: XAG={xag_rate}, CNY={cny_rate}")
-            return None
-        
-        # Western spot price (global/COMEX price in USD)
-        western_spot = 1.0 / xag_rate
-        
-        # For Shanghai premium calculation:
-        # The premium comes from the fact that silver in China trades at a premium
-        # due to import duties, VAT, and demand.
-        # 
-        # MetalpriceAPI gives us the same XAG spot rate globally, but the actual
-        # Shanghai price would be higher due to local market dynamics.
-        #
-        # Historical Shanghai premium typically ranges 1-2% in normal times,
-        # but can spike to 10%+ during high demand/stress.
-        #
-        # Since the API provides global spot (not Shanghai-specific),
-        # we'll estimate Shanghai spot by applying the known premium.
-        # 
-        # TODO: If MetalpriceAPI adds Shanghai-specific pricing, use that directly.
-        
-        # For now, use the USDCNY inverse to get CNY value
-        # USDXAG gives us USD/oz price directly
-        usd_xag = rates.get('USDXAG')
-        if usd_xag:
-            western_spot = usd_xag
+        with sync_playwright() as p:
+            # Launch browser
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_default_timeout(30000)
             
-        logger.info(f"MetalpriceAPI: Silver spot ${western_spot:.2f}/oz, CNY rate: {cny_rate}")
-        
-        # Return just the western spot - we'll use manual premium if needed
-        return {
-            'western_spot': western_spot,
-            'cny_rate': cny_rate,
-            'source': 'metalpriceapi'
-        }
+            try:
+                # Navigate to SGE page
+                logger.debug(f"Loading SGE price page...")
+                page.goto(SGE_OFFICIAL_URL, wait_until="domcontentloaded", timeout=30000)
+                
+                # Wait for JavaScript to render the data table
+                logger.debug(f"Waiting 10 seconds for JavaScript rendering...")
+                time.sleep(10)
+                
+                # Get page content
+                content = page.content()
+                
+                # Parse the price from HTML
+                # Format in table: <td>20260126</td><td>SHAG</td><td>27510</td><td>27417</td>
+                pattern = rf'{today}\s*</td>\s*<td>\s*SHAG\s*</td>\s*<td>\s*([\d]+)\s*</td>'
+                match = re.search(pattern, content)
+                
+                if match:
+                    cny_per_kg = float(match.group(1))
+                    logger.debug(f"Found SGE silver price: {cny_per_kg} CNY/kg")
+                    
+                    # Convert CNY/kg to USD/oz
+                    # 1 kg = 32.1507 troy oz
+                    # USD/CNY exchange rate (approximate)
+                    usd_cny_rate = 7.25
+                    
+                    cny_per_oz = cny_per_kg / 32.1507
+                    usd_per_oz = cny_per_oz / usd_cny_rate
+                    
+                    logger.info(f"SGE official: {cny_per_kg} CNY/kg = ${usd_per_oz:.2f}/oz")
+                    
+                    return {
+                        'shanghai_spot': usd_per_oz,
+                        'source': 'sge_official'
+                    }
+                else:
+                    logger.warning(f"Could not find SGE price pattern for {today}")
+                    return None
+                    
+            finally:
+                browser.close()
             
-    except requests.exceptions.RequestException as e:
-        logger.error(f"MetalpriceAPI request error: {e}")
+    except ImportError:
+        logger.warning("Playwright not installed")
         return None
     except Exception as e:
-        logger.error(f"Error processing MetalpriceAPI data: {e}")
+        logger.error(f"Error fetching SGE with Playwright: {e}")
         return None
 
 
@@ -126,22 +109,13 @@ def fetch_shanghai_premium() -> Optional[Dict[str, Any]]:
     Fetch Shanghai silver premium.
     
     Strategy:
-    1. Try MetalpriceAPI for live Western spot price
-    2. Apply known premium spread (from metalcharts.org observations)
-    3. Fallback to fully manual values if API unavailable
-    
-    The Shanghai premium reflects local supply/demand dynamics that
-    MetalpriceAPI's global spot doesn't capture, so we combine:
-    - Live spot price from MetalpriceAPI (accurate Western price)
-    - Known premium spread from market observations
+    1. Try SGE official source via Playwright (actual SGE price in CNY/kg)
+    2. Fallback to MetalpriceAPI for Western spot + manual premium
+    3. Final fallback to fully manual values
     
     Returns:
         Dict with shanghai_spot, western_spot, premium_usd, premium_pct
     """
-    # Current observed premium from metalcharts.org (as of Jan 26, 2026)
-    # Update this periodically based on: https://metalcharts.org/shanghai
-    OBSERVED_PREMIUM_USD = 11.58  # Premium in $/oz
-    
     data = {
         'shanghai_spot': None,
         'western_spot': None,
@@ -149,51 +123,72 @@ def fetch_shanghai_premium() -> Optional[Dict[str, Any]]:
         'premium_pct': None
     }
     
-    # Try MetalpriceAPI first for live spot price
-    api_data = fetch_from_metalpriceapi()
+    # Try SGE official first
+    sge_data = fetch_sge_official_with_playwright()
     
-    if api_data and api_data.get('western_spot'):
-        data['western_spot'] = api_data['western_spot']
-        data['premium_usd'] = OBSERVED_PREMIUM_USD
-        data['shanghai_spot'] = data['western_spot'] + OBSERVED_PREMIUM_USD
-        data['premium_pct'] = (OBSERVED_PREMIUM_USD / data['western_spot']) * 100
-        source = "MetalpriceAPI"
-        
-        logger.info(
-            f"Using MetalpriceAPI spot ${data['western_spot']:.2f} + "
-            f"observed premium ${OBSERVED_PREMIUM_USD:.2f} = "
-            f"Shanghai ${data['shanghai_spot']:.2f}"
-        )
-    else:
-        # Try database for recent spot price
+    if sge_data and sge_data.get('shanghai_spot'):
+        # Got SGE price, now need Western spot for comparison
         try:
             from scripts.db import get_latest_spot_price
             latest_spot = get_latest_spot_price()
             if latest_spot and latest_spot.get('price_usd'):
                 data['western_spot'] = latest_spot['price_usd']
-                data['premium_usd'] = OBSERVED_PREMIUM_USD
-                data['shanghai_spot'] = data['western_spot'] + OBSERVED_PREMIUM_USD
-                data['premium_pct'] = (OBSERVED_PREMIUM_USD / data['western_spot']) * 100
-                source = "DB_spot"
+                data['shanghai_spot'] = sge_data['shanghai_spot']
+                data['premium_usd'] = data['shanghai_spot'] - data['western_spot']
+                data['premium_pct'] = (data['premium_usd'] / data['western_spot']) * 100
+                source = "SGE_official"
                 
-                logger.info(f"Using DB spot ${data['western_spot']:.2f} + premium")
+                logger.info(
+                    f"Using SGE official: Shanghai ${data['shanghai_spot']:.2f}, "
+                    f"Western ${data['western_spot']:.2f}, "
+                    f"Premium +${data['premium_usd']:.2f} ({data['premium_pct']:.2f}%)"
+                )
+                
+                # Insert into database
+                insert_shanghai_premium(
+                    shanghai_spot=data['shanghai_spot'],
+                    western_spot=data['western_spot'],
+                    premium_usd=data['premium_usd'],
+                    premium_pct=data['premium_pct'],
+                    source=source
+                )
+                
+                return data
         except Exception as e:
-            logger.warning(f"Could not get Western spot from database: {e}")
+            logger.warning(f"Could not get Western spot for SGE comparison: {e}")
+    
+    # Fallback: Use observed premium + Western spot
+    observed_premium_usd = 11.58  # From metalcharts.org (Jan 26, 2026)
+    
+    try:
+        from scripts.db import get_latest_spot_price
+        latest_spot = get_latest_spot_price()
+        if latest_spot and latest_spot.get('price_usd'):
+            data['western_spot'] = latest_spot['price_usd']
+            data['premium_usd'] = observed_premium_usd
+            data['shanghai_spot'] = data['western_spot'] + observed_premium_usd
+            data['premium_pct'] = (observed_premium_usd / data['western_spot']) * 100
+            source = "DB_spot"
+            
+            logger.info(
+                f"Using DB spot ${data['western_spot']:.2f} + "
+                f"observed premium ${observed_premium_usd:.2f}"
+            )
+            
+            insert_shanghai_premium(
+                shanghai_spot=data['shanghai_spot'],
+                western_spot=data['western_spot'],
+                premium_usd=data['premium_usd'],
+                premium_pct=data['premium_pct'],
+                source=source
+            )
+            
+            return data
+    except Exception as e:
+        logger.warning(f"Could not get Western spot from database: {e}")
     
     # Final fallback to fully manual values
-    if data['western_spot'] is None:
-        return use_manual_shanghai_premium()
-    
-    # Insert into database
-    insert_shanghai_premium(
-        shanghai_spot=data['shanghai_spot'],
-        western_spot=data['western_spot'],
-        premium_usd=data['premium_usd'],
-        premium_pct=data['premium_pct'],
-        source=source
-    )
-    
-    return data
+    return use_manual_shanghai_premium()
 
 
 def use_manual_shanghai_premium() -> Optional[Dict[str, Any]]:

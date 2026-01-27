@@ -5,6 +5,7 @@
 // Configuration
 const DATA_URL = 'data/latest.json';
 const HISTORICAL_URL = 'data/historical.json';
+const REFRESH_INTERVAL = 4000; // 4 seconds
 
 // Chart instances storage
 const charts = {};
@@ -41,6 +42,15 @@ async function initDashboard() {
         if (historical && historical.data) {
             updateCharts(historical.data);
         }
+        
+        // Set up auto-refresh every 4 seconds
+        setInterval(async () => {
+            const freshData = await fetchData(DATA_URL);
+            if (freshData && freshData.metrics) {
+                updateDashboard(freshData.metrics);
+            }
+        }, REFRESH_INTERVAL);
+        
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         showError('Failed to load dashboard data. Please try again later.');
@@ -160,10 +170,10 @@ function updatePanel(name, data) {
         const detailEl = document.getElementById('margin-detail');
         if (detailEl && data.value) {
             detailEl.textContent = `Initial margin: $${data.value.toLocaleString()}`;
-        }if (name === 'shanghai') {
+        }
+    } else if (name === 'shanghai') {
         // For Shanghai, show premium in USD with 2 decimals
         valueEl.textContent = data.value !== null ? data.value.toFixed(2) : '--';
-    } else 
     } else {
         valueEl.textContent = data.value !== null ? data.value.toFixed(1) : '--';
     }
@@ -308,8 +318,5 @@ function formatDate(dateString) {
     }
 }
 
-// Initialize on DOM ready
+// Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', initDashboard);
-
-// Auto-refresh every 5 minutes
-setInterval(initDashboard, 5 * 60 * 1000);

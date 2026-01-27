@@ -9,6 +9,7 @@ Run this manually or via GitHub Actions to update the dashboard.
 import argparse
 import logging
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -229,12 +230,22 @@ def main():
         action='store_true',
         help='Initialize database and exit'
     )
+    parser.add_argument(
+        '--continuous',
+        action='store_true',
+        help='Run continuously, updating every 60 seconds (Ctrl+C to quit)'
+    )
+    parser.add_argument(
+        '--interval',
+        type=int,
+        default=60,
+        help='Update interval in seconds when running continuously (default: 60)'
+    )
     
     args = parser.parse_args()
     
     # Setup
     logger = setup_logging(args.verbose)
-    logger.info(f"Silver Metrics Tracker - Starting update at {datetime.now().isoformat()}")
     
     # Ensure data directory exists
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -246,6 +257,45 @@ def main():
     if args.init_db:
         logger.info("Database initialized. Exiting.")
         return 0
+    
+    # Continuous mode
+    if args.continuous:
+        logger.info(f"Starting continuous updates every {args.interval} seconds (Ctrl+C to quit)...")
+        update_count = 0
+        try:
+            while True:
+                update_count += 1
+                logger.info(f"\n{'='*50}")
+                logger.info(f"Silver Metrics Tracker - Update #{update_count} at {datetime.now().isoformat()}")
+                logger.info(f"{'='*50}")
+                
+                fetch_results = {'errors': []}
+                
+                # Fetch data
+                if not args.export_only:
+                    fetch_results = fetch_all_data(logger)
+                
+                # Process and export
+                if not args.fetch_only:
+                    success = process_and_export(logger)
+                    if not success:
+                        fetch_results['errors'].append("Export failed")
+                
+                # Summary
+                print_summary(logger, fetch_results)
+                
+                # Wait before next update
+                logger.info(f"Next update in {args.interval} seconds...")
+                time.sleep(args.interval)
+        except KeyboardInterrupt:
+            logger.info("\nShutting down gracefully (Ctrl+C pressed)...")
+            return 0
+        except Exception as e:
+            logger.error(f"Fatal error in continuous mode: {e}")
+            return 1
+    
+    # Single run mode
+    logger.info(f"Silver Metrics Tracker - Starting update at {datetime.now().isoformat()}")
     
     fetch_results = {'errors': []}
     

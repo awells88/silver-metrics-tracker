@@ -7,6 +7,9 @@ pandas>=2.1.0
 openpyxl>=3.1.0
 xlrd>=2.0.0
 
+# Browser automation (for JavaScript-rendered pages)
+playwright>=1.57.0
+
 # Financial data
 yfinance>=0.2.30
 
