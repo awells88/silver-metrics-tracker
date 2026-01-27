@@ -33,7 +33,7 @@ PAPER_VS_PHYSICAL_URL = "https://www.papervsphysical.com"
 
 # Shanghai Premium - MetalpriceAPI (get free key at https://metalpriceapi.com/register)
 # Set via environment variable: export METALPRICEAPI_KEY=your_key_here
-# Free tier: 100 requests/month, daily updates
+# Free tier: 100 requests/month, hourly updates
 METALPRICEAPI_URL = "https://api.metalpriceapi.com/v1/latest"
 
 # Shanghai premium reference (for validation): https://metalcharts.org/shanghai
