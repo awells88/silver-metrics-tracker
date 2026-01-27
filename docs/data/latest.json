@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-27T12:05:23.447203",
+  "generated_at": "2026-01-27T23:23:07.815154",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 111.455,
-      "change_24h": -3.51,
+      "value": 111.32,
+      "change_24h": 5.06,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-27 12:05:22"
+      "timestamp": "2026-01-27 23:23:02"
     },
     "premium": {
       "metric": "premium",
@@ -18,35 +18,35 @@
       "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 111.455,
-        "physical": 124.82960000000001,
-        "usd": 13.374600000000015
+        "spot": 111.32,
+        "physical": 124.67840000000001,
+        "usd": 13.358400000000017
       }
     },
     "inventory": {
       "metric": "inventory",
-      "value": 415.24183701900006,
+      "value": 415.146296799,
       "unit": "M oz",
       "status_color": "green",
       "status_label": "Healthy",
       "is_normalizing": true,
       "threshold_normal": ">400.0M oz",
       "trend": "stable",
-      "trend_change_moz": -1.18,
+      "trend_change_moz": -1.28,
       "description": "COMEX warehouse silver stocks",
-      "registered_moz": 113.269767258,
+      "registered_moz": 112.40924207699999,
       "registered_status": "Healthy",
       "raw": {
-        "total_oz": 415241837.01900005,
-        "registered_oz": 113269767.258,
-        "eligible_oz": 301972069.76100004
+        "total_oz": 415146296.799,
+        "registered_oz": 112409242.07699999,
+        "eligible_oz": 302737054.722
       }
     },
     "margin": {
       "metric": "margin",
       "value": 45000.0,
       "unit": "USD",
-      "days_since_change": 0,
+      "days_since_change": 1,
       "status_color": "red",
       "status_label": "Volatile",
       "is_normalizing": false,
@@ -83,9 +83,9 @@
       "threshold_normal": "\u2264$2.0/oz",
       "description": "Shanghai vs Western silver price difference",
       "raw": {
-        "shanghai_spot": 123.035,
-        "western_spot": 111.455,
-        "premium_pct": 10.389843434570006
+        "shanghai_spot": 122.89999999999999,
+        "western_spot": 111.32,
+        "premium_pct": 10.402443406395976
       }
     },
     "composite": {
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-01-27T12:05:23.447175"
+    "last_updated": "2026-01-27T23:23:07.815130"
   }
 }
