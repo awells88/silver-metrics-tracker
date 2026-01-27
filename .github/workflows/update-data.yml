@@ -1,9 +1,9 @@
 name: Update Silver Metrics Data
 
 on:
-  # Run every 12 hours
+  # Run every hour
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 * * * *'
   
   # Allow manual trigger
   workflow_dispatch:

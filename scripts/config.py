@@ -151,7 +151,7 @@ REQUEST_HEADERS = {
 }
 
 # === Update Schedule ===
-UPDATE_INTERVAL_HOURS = 12
+UPDATE_INTERVAL_HOURS = 1
 
 # === Logging ===
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
