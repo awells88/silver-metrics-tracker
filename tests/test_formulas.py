@@ -235,33 +235,54 @@ class TestMarginFormulas:
         assert pct_notional == 9.0, "Margin should be 9% of notional"
     
     def test_margin_with_various_silver_prices(self):
-        """Test margin calculation at different silver price levels."""
-        # At $80/oz (notional = $400k)
+        """
+        Test margin calculation at different silver price levels.
+        
+        Given CME's 9% margin requirement, verify dollar amounts at different prices.
+        These values are based on actual CME margin requirements as of Jan 2026.
+        """
+        contract_size = 5000  # CME specification
+        margin_pct = 9.0      # New CME standard (Jan 2026)
+        
+        # Test at $80/oz - Notional: $400,000
         spot_80 = 80.00
-        notional_80 = 5000 * spot_80
-        margin_80 = notional_80 * 0.09  # 9% of notional
-        pct_80 = (margin_80 / notional_80) * 100
-        assert pct_80 == 9.0
+        notional_80 = contract_size * spot_80
+        expected_margin_80 = 36000.0  # 9% of $400,000
+        calculated_margin_80 = notional_80 * (margin_pct / 100)
+        assert calculated_margin_80 == expected_margin_80, f"Expected ${expected_margin_80:,.0f}, got ${calculated_margin_80:,.0f}"
         
-        # At $100/oz (notional = $500k)
+        # Test at $100/oz - Notional: $500,000
         spot_100 = 100.00
-        notional_100 = 5000 * spot_100
-        margin_100 = notional_100 * 0.09
-        pct_100 = (margin_100 / notional_100) * 100
-        assert pct_100 == 9.0
+        notional_100 = contract_size * spot_100
+        expected_margin_100 = 45000.0  # 9% of $500,000
+        calculated_margin_100 = notional_100 * (margin_pct / 100)
+        assert calculated_margin_100 == expected_margin_100, f"Expected ${expected_margin_100:,.0f}, got ${calculated_margin_100:,.0f}"
         
-        # At $120/oz (notional = $600k)
+        # Test at $120/oz - Notional: $600,000
         spot_120 = 120.00
-        notional_120 = 5000 * spot_120
-        margin_120 = notional_120 * 0.09
-        pct_120 = (margin_120 / notional_120) * 100
-        assert pct_120 == 9.0
+        notional_120 = contract_size * spot_120
+        expected_margin_120 = 54000.0  # 9% of $600,000
+        calculated_margin_120 = notional_120 * (margin_pct / 100)
+        assert calculated_margin_120 == expected_margin_120, f"Expected ${expected_margin_120:,.0f}, got ${calculated_margin_120:,.0f}"
     
     def test_cme_contract_size(self):
-        """Verify CME silver futures contract specification."""
+        """
+        Verify CME silver futures contract specification.
+        
+        Test that calculations using the contract size produce expected results.
+        """
         # CME silver futures = 5,000 troy ounces per contract
         contract_size_oz = 5000
-        assert contract_size_oz == 5000, "CME silver contract is 5,000 oz"
+        spot_price = 100.00
+        margin_pct = 9.0
+        
+        # At 9% margin with spot=$100, expect $45,000 margin
+        expected_margin = contract_size_oz * spot_price * (margin_pct / 100)
+        assert expected_margin == 45000.0, "5000 oz at $100 with 9% should be $45,000"
+        
+        # Verify notional value calculation
+        notional = contract_size_oz * spot_price
+        assert notional == 500000.0, "Notional for 5000 oz at $100 should be $500,000"
     
     def test_margin_dollar_amount_scales_with_price(self):
         """
@@ -296,18 +317,28 @@ class TestFormulaEdgeCases:
         with pytest.raises(ZeroDivisionError):
             premium_pct = (5.00 / 0.00) * 100
     
-    def test_negative_prices_invalid(self):
-        """Test that negative prices would produce invalid results."""
-        # Negative spot price is invalid
+    def test_negative_prices_should_be_rejected(self):
+        """
+        Test that the system would need input validation for negative prices.
+        
+        Note: This test documents that negative prices produce mathematically
+        correct but semantically meaningless results. In production code,
+        input validation should reject negative prices before calculation.
+        """
+        # Negative spot price is invalid in real markets
         paper_price = -25.00
         physical_price = 30.00
-        premium_usd = physical_price - paper_price
         
-        # This would give incorrect results
-        premium_pct = (premium_usd / paper_price) * 100
+        # The formula would produce a result, but it's meaningless
+        premium_usd = physical_price - paper_price  # 55
+        premium_pct = (premium_usd / paper_price) * 100  # -220%
         
-        # Result is negative, which is mathematically correct but semantically wrong
-        assert premium_pct < 0, "Negative spot price produces invalid result"
+        # This demonstrates why input validation is important
+        assert premium_pct < 0, "Negative spot price would produce invalid negative percentage"
+        
+        # In production code, this should be caught:
+        # if paper_price <= 0:
+        #     raise ValueError("Spot price must be positive")
 
 
 if __name__ == "__main__":
