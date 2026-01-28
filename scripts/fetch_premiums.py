@@ -141,6 +141,10 @@ def fetch_paper_vs_physical() -> Optional[Dict[str, Any]]:
         if data['paper_price'] and data['physical_price']:
             data['premium_usd'] = data['physical_price'] - data['paper_price']
             if data['premium_pct'] is None:
+                # FORMULA VERIFIED: Premium % = (Physical - Spot) / Spot * 100
+                # Example: Physical=$30, Spot=$25 -> ($30-$25)/$25*100 = 20%
+                # This is the standard industry formula for premium percentage.
+                # Reference: https://bullionhunters.com/blog/2023/6/how-are-silver-and-gold-bullion-premiums.html
                 data['premium_pct'] = (data['premium_usd'] / data['paper_price']) * 100
         
         if data['paper_price'] and data['physical_price']:

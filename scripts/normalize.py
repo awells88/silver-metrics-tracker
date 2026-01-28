@@ -230,6 +230,17 @@ def normalize_margin(initial_margin: float, spot_price: float = None,
     # Calculate margin as % of notional (if spot price available)
     pct_notional = None
     if spot_price:
+        # FORMULA VERIFIED: Margin % = (Initial Margin / Notional Value) * 100
+        # where Notional Value = Contract Size (5000 oz) * Spot Price
+        # 
+        # CME silver futures contract = 5,000 troy ounces (verified CME specification)
+        # New CME standard (effective Jan 13, 2026): 9% of notional value
+        # 
+        # Example: Spot=$30/oz, Margin=$13,500
+        #   Notional = 5000 * $30 = $150,000
+        #   Margin % = ($13,500 / $150,000) * 100 = 9%
+        # 
+        # Reference: https://thedeepdive.ca/cme-flips-metals-margin-math-to-notional-percentages/
         notional_value = 5000 * spot_price  # CME silver contract = 5000 oz
         pct_notional = (initial_margin / notional_value) * 100
         
