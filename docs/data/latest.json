@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-28T23:10:30.251985",
+  "generated_at": "2026-01-29T00:35:13.187348",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 117.13,
-      "change_24h": 3.17,
+      "value": 117.34,
+      "change_24h": 3.35,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-28 23:10:28"
+      "timestamp": "2026-01-29 00:35:11"
     },
     "premium": {
       "metric": "premium",
@@ -18,9 +18,9 @@
       "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 117.13,
-        "physical": 131.1856,
-        "usd": 14.055599999999998
+        "spot": 117.34,
+        "physical": 131.4208,
+        "usd": 14.08080000000001
       }
     },
     "inventory": {
@@ -52,7 +52,7 @@
       "is_normalizing": false,
       "threshold_stable": "30+ days unchanged",
       "description": "CME initial margin for silver futures",
-      "pct_of_notional": 7.68,
+      "pct_of_notional": 7.67,
       "pct_threshold_normal": "7.0-9.0%",
       "raw": {
         "initial": 45000.0,
@@ -83,9 +83,9 @@
       "threshold_normal": "\u2264$2.0/oz",
       "description": "Shanghai vs Western silver price difference",
       "raw": {
-        "shanghai_spot": 128.71,
-        "western_spot": 117.13,
-        "premium_pct": 9.88645095193375
+        "shanghai_spot": 128.92000000000002,
+        "western_spot": 117.34,
+        "premium_pct": 9.868757456962673
       }
     },
     "composite": {
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-01-28T23:10:30.251956"
+    "last_updated": "2026-01-29T00:35:13.187320"
   }
 }
