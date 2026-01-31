@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-31T12:12:34.157513",
+  "generated_at": "2026-01-31T13:20:21.585492",
   "version": "1.0",
   "metrics": {
     "spot_price": {
       "value": 78.531,
       "change_24h": -31.37,
       "source": "yahoo_finance",
-      "timestamp": "2026-01-31 12:12:32"
+      "timestamp": "2026-01-31 13:20:19"
     },
     "premium": {
       "metric": "premium",
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-01-31T12:12:34.157485"
+    "last_updated": "2026-01-31T13:20:21.585465"
   }
 }
