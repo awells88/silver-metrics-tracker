@@ -43,14 +43,6 @@ async function initDashboard() {
             updateCharts(historical.data);
         }
         
-        // Set up auto-refresh every 4 seconds
-        setInterval(async () => {
-            const freshData = await fetchData(DATA_URL);
-            if (freshData && freshData.metrics) {
-                updateDashboard(freshData.metrics);
-            }
-        }, REFRESH_INTERVAL);
-        
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         showError('Failed to load dashboard data. Please try again later.');
