@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-02-01T18:12:06.962582",
+  "generated_at": "2026-02-01T19:11:35.768513",
   "version": "1.0",
   "metrics": {
     "spot_price": {
       "value": 78.531,
       "change_24h": -31.37,
       "source": "yahoo_finance",
-      "timestamp": "2026-02-01 18:12:04"
+      "timestamp": "2026-02-01 19:11:33"
     },
     "premium": {
       "metric": "premium",
@@ -46,7 +46,7 @@
       "metric": "margin",
       "value": 45000.0,
       "unit": "USD",
-      "days_since_change": 5,
+      "days_since_change": 6,
       "status_color": "red",
       "status_label": "Volatile",
       "is_normalizing": false,
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-02-01T18:12:06.962553"
+    "last_updated": "2026-02-01T19:11:35.768487"
   }
 }
