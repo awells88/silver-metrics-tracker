@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-02-02T17:18:56.664328",
+  "generated_at": "2026-02-02T23:10:46.009325",
   "version": "1.0",
   "metrics": {
     "spot_price": {
-      "value": 79.85,
-      "change_24h": 1.68,
+      "value": 80.175,
+      "change_24h": 4.11,
       "source": "yahoo_finance",
-      "timestamp": "2026-02-02 17:18:54"
+      "timestamp": "2026-02-02 23:10:40"
     },
     "premium": {
       "metric": "premium",
@@ -18,41 +18,41 @@
       "threshold_normal": "5.0-15.0%",
       "description": "Physical silver price vs paper/spot",
       "raw": {
-        "spot": 79.85,
-        "physical": 89.432,
-        "usd": 9.582000000000008
+        "spot": 80.175,
+        "physical": 89.796,
+        "usd": 9.62100000000001
       }
     },
     "inventory": {
       "metric": "inventory",
-      "value": 405.88680674,
+      "value": 405.69759439200004,
       "unit": "M oz",
       "status_color": "yellow",
       "status_label": "Declining",
       "is_normalizing": true,
       "threshold_normal": ">400.0M oz",
       "trend": "declining",
-      "trend_change_moz": -10.54,
+      "trend_change_moz": -10.73,
       "description": "COMEX warehouse silver stocks",
-      "registered_moz": 104.879944894,
+      "registered_moz": 104.01753744399998,
       "registered_status": "Healthy",
       "raw": {
-        "total_oz": 405886806.74,
-        "registered_oz": 104879944.89400001,
-        "eligible_oz": 301006861.846
+        "total_oz": 405697594.392,
+        "registered_oz": 104017537.44399999,
+        "eligible_oz": 301680056.948
       }
     },
     "margin": {
       "metric": "margin",
       "value": 45000.0,
       "unit": "USD",
-      "days_since_change": 6,
+      "days_since_change": 7,
       "status_color": "red",
       "status_label": "Volatile",
       "is_normalizing": false,
       "threshold_stable": "30+ days unchanged",
       "description": "CME initial margin for silver futures",
-      "pct_of_notional": 11.27,
+      "pct_of_notional": 11.23,
       "pct_threshold_normal": "7.0-9.0%",
       "raw": {
         "initial": 45000.0,
@@ -83,9 +83,9 @@
       "threshold_normal": "\u2264$2.0/oz",
       "description": "Shanghai vs Western silver price difference",
       "raw": {
-        "shanghai_spot": 91.42999999999999,
-        "western_spot": 79.85,
-        "premium_pct": 14.502191609267378
+        "shanghai_spot": 91.755,
+        "western_spot": 80.175,
+        "premium_pct": 14.443405051449954
       }
     },
     "composite": {
@@ -96,6 +96,6 @@
       "status_label": "Mixed Signals",
       "description": "3/5 indicators normalizing"
     },
-    "last_updated": "2026-02-02T17:18:56.664294"
+    "last_updated": "2026-02-02T23:10:46.009297"
   }
 }
