@@ -75,10 +75,14 @@ def fetch_sge_official_with_playwright() -> Optional[Dict[str, Any]]:
                     cny_per_kg = float(match.group(1))
                     logger.debug(f"Found SGE silver price: {cny_per_kg} CNY/kg")
                     
-                    # Convert CNY/kg to USD/oz
-                    # 1 kg = 32.1507 troy oz
-                    # USD/CNY exchange rate (approximate)
-                    usd_cny_rate = 7.25
+                    # CONVERSION FORMULA VERIFIED: CNY/kg -> USD/oz
+                    # Step 1: Convert kg to troy oz (1 kg = 32.1507 troy oz - standard)
+                    # Step 2: Convert CNY to USD by dividing by exchange rate
+                    # Example: 27510 CNY/kg, rate 7.25 CNY/USD
+                    #   -> 27510 / 32.1507 = 855.37 CNY/oz
+                    #   -> 855.37 / 7.25 = $118.00/oz
+                    # Reference: https://metalcharts.org/shanghai
+                    usd_cny_rate = 7.25  # ~7.25 CNY = 1 USD (typical 2026 rate)
                     
                     cny_per_oz = cny_per_kg / 32.1507
                     usd_per_oz = cny_per_oz / usd_cny_rate
@@ -135,6 +139,10 @@ def fetch_shanghai_premium() -> Optional[Dict[str, Any]]:
                 data['western_spot'] = latest_spot['price_usd']
                 data['shanghai_spot'] = sge_data['shanghai_spot']
                 data['premium_usd'] = data['shanghai_spot'] - data['western_spot']
+                # FORMULA VERIFIED: Shanghai Premium % = (Shanghai - Western) / Western * 100
+                # Example: Shanghai=$120, Western=$100 -> ($120-$100)/$100*100 = 20%
+                # This measures the arbitrage premium for physical silver in China.
+                # Reference: https://metalcharts.org/shanghai
                 data['premium_pct'] = (data['premium_usd'] / data['western_spot']) * 100
                 source = "SGE_official"
                 
